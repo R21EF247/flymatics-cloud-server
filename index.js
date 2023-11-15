@@ -54,10 +54,25 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
+    socket.on('start-video-stream', () => {
+        const libcameraVid = spawn('libcamera-vid', ['-t', '0', '-o', '-']);
+
+        libcameraVid.stdout.on('data', (data) => {
+            socket.emit('video-stream', data);
+        });
+
+        libcameraVid.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        libcameraVid.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+    });
 });
 
 
-const PORT = process.env.PORT || 1234;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log('Cloud server listening on port', PORT);
+    console.log('Cloud server listening on port', PORT);
 });
