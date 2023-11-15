@@ -41,6 +41,16 @@ io.on('connection', (socket) => {
     socket.on('send-confirmation', (confirmation) => {
         socket.to('pilot-room').emit('forwarded-confirmation', confirmation);
     });
+    socket.on('Data Received from Nano', (nanoData) => {
+        console.log('Nano port data received:', nanoData);
+        socket.to('control-station-room').emit('forwarded-nano-data', nanoData);
+    });
+
+    // Forward Pico port data to control station
+    socket.on('Data Received from Pico', (picoData) => {
+        console.log('Pico port data received:', picoData);
+        socket.to('control-station-room').emit('forwarded-pico-data', picoData);
+    });
 
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
